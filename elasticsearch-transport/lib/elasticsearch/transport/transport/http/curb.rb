@@ -21,7 +21,12 @@ module Elasticsearch
 
               case method
                 when 'HEAD'
+                  # HEAD responses include a non zero Content-Length but
+                  # dont actually send a body.
+                  connection.connection.set :nobody, true
                 when 'GET', 'POST', 'PUT', 'DELETE'
+                  connection.connection.set :nobody, false
+
                   connection.connection.put_data = __convert_to_json(body) if body
                 else raise ArgumentError, "Unsupported HTTP method: #{method}"
               end
