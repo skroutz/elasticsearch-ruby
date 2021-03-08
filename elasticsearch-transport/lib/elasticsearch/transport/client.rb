@@ -123,6 +123,7 @@ module Elasticsearch
                                      DEFAULT_HOST)
 
         @send_get_body_as = @arguments[:send_get_body_as] || 'GET'
+        @opaque_id_prefix = @arguments[:opaque_id_prefix] || nil
 
         if @arguments[:request_timeout]
           @arguments[:transport_options][:request] = { :timeout => @arguments[:request_timeout] }
@@ -149,6 +150,11 @@ module Elasticsearch
       #
       def perform_request(method, path, params={}, body=nil, headers=nil)
         method = @send_get_body_as if 'GET' == method && body
+        if (opaque_id = params.delete(:opaque_id))
+          headers = {} if headers.nil?
+          opaque_id = @opaque_id_prefix ? "#{@opaque_id_prefix}#{opaque_id}" : opaque_id
+          headers.merge!('X-Opaque-Id' => opaque_id)
+        end
         transport.perform_request(method, path, params, body, headers)
       end
 
