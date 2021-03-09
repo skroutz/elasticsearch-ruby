@@ -4,6 +4,6 @@
 
 module Elasticsearch
   module Transport
-    VERSION = "7.4.0"
+    VERSION = "7.4.0.skroutz1"
   end
 end
